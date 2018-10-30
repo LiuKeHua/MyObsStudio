@@ -25,6 +25,7 @@
 !CMakeLists.txt
 
 !/CMake/**/*
+!MyCmake.rar
 
 BUILD_VS2015/**/*
 additional_install_files/**/*
