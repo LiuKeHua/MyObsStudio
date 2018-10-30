@@ -39,4 +39,6 @@
 BUILD_VS2015/**/*
 additional_install_files/**/*
 dependencies2015/**/*
+BUILD_VS2017/**/*
+dependencies2017/**/*
 
