@@ -19,9 +19,9 @@
 !.gitignore
 £¡*.txt
 !*.bat
-!.hpp
-!.c
-!.cpp
+!*.hpp
+!*.c
+!*.cpp
 !CMakeLists.txt
 
 !/CMake/**/*
