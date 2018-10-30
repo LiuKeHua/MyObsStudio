@@ -23,8 +23,17 @@
 !*.c
 !*.cpp
 !CMakeLists.txt
-
 !/CMake/**/*
+!/deps/**/*
+!/plugins/**/*
+!/UI/**/*
+!/libobs/**/*
+!/libobs-d3d11/**/*
+!/libobs-opengl/**/*
+!/MyTest/**/*
+!/test/**/*
+
+
 
 BUILD_VS2015/**/*
 additional_install_files/**/*
