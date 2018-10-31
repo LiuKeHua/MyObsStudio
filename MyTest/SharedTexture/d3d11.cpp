@@ -218,9 +218,7 @@ namespace d3d11
 
 		// todo: handle offset
 		d3d11_ctx->Draw(vertices_, 0);
-	}
-
-	
+	}	
 	Texture2D::Texture2D(
 		ID3D11Texture2D* tex,
 		ID3D11ShaderResourceView* srv)
@@ -511,8 +509,7 @@ namespace d3d11
 		return make_shared<SwapChain>(swapchain, rtv, sampler, blender);
 	}
 	
-	shared_ptr<Geometry> Device::create_quad(
-			float x, float y, float width, float height, bool flip)
+	shared_ptr<Geometry> Device::create_quad(float x, float y, float width, float height, bool flip)
 	{
 		x = (x * 2.0f) - 1.0f;
 		y = 1.0f - (y * 2.0f);

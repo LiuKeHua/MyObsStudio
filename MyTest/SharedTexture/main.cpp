@@ -103,21 +103,22 @@ atomic_bool abort_;
 //
 // synchronus render loop for update + render on both producer and consumer
 //
-void render_loop_sync(
-	shared_ptr<IScene> const& producer, shared_ptr<IScene> const& consumer)
+void render_loop_sync(shared_ptr<IScene> const& producer, shared_ptr<IScene> const& consumer)
 {
 	while (!abort_)
 	{
 		auto const t = clock_.now() / 1000000.0;
 
 		// update + render the producer
-		if (!clock_.is_paused()) {
+		if (!clock_.is_paused())
+		{
 			producer->tick(t);
 		}
 		producer->render();
 
 		// update + render the consumer
-		if (!clock_.is_paused()) {
+		if (!clock_.is_paused()) 
+		{
 			consumer->tick(t);
 		}
 		consumer->render();
@@ -196,8 +197,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int)
 	}
 
 	// load keyboard accelerators
-	auto const accel_table =
-		LoadAccelerators(instance, MAKEINTRESOURCE(IDR_APPLICATION));
+	auto const accel_table = LoadAccelerators(instance, MAKEINTRESOURCE(IDR_APPLICATION));
 
 	// create window(s) with our specific size
 	auto const win_main = create_window(instance);
@@ -287,7 +287,8 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int)
 	
 	// stop all rendering threads
 	abort_ = true;
-	for (auto const& t : threads) {
+	for (auto const& t : threads)
+	{
 		t->join();
 	}
 
@@ -461,8 +462,7 @@ LRESULT CALLBACK wnd_proc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			
 		case WM_CONTEXTMENU:
 			{
-				auto const menu = LoadMenu(
-					GetModuleHandle(0), MAKEINTRESOURCE(IDR_APPLICATION));
+				auto const menu = LoadMenu(GetModuleHandle(0), MAKEINTRESOURCE(IDR_APPLICATION));
 				auto const submenu = GetSubMenu(menu, 0);
 				auto const x = ((int)(short)LOWORD(lparam));
 				auto const y = ((int)(short)HIWORD(lparam));

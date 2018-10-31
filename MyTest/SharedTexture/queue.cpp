@@ -49,8 +49,8 @@ namespace {
 				}
 
 				unique_lock<mutex> lock(lock_);
-				if (!signal_.wait_for(lock, timeout_ms * 1ms,
-					[&]() { return (queue_.size() > 0); })) 
+				bool ok = signal_.wait_for(lock, timeout_ms * 1ms,[&]() { return (queue_.size() > 0); });
+				if (!ok)
 				{
 					break;
 				}
@@ -78,6 +78,7 @@ namespace {
 		{
 			due_.push(surface);
 		}
+
 		shared_ptr<ISurface> consume(uint32_t timeout_ms) override 
 		{
 			auto const surf = due_.pop(timeout_ms);

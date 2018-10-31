@@ -12,7 +12,7 @@ SET(TARGET_SRC
 	d3d11.h	
 	main.cpp
 	platform.h
-	renderer.cpp
+	queue.cpp
 	renderer9.cpp
 	renderer11.cpp
 	resource.h

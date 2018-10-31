@@ -32,8 +32,7 @@ namespace {
 	string get_temp_filename(std::string const& filename)
 	{
 		PWSTR wpath = nullptr;
-		if (SUCCEEDED(
-			SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, 0, &wpath)))
+		if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, 0, &wpath)))
 		{
 			wstring utf16_path(wpath);
 			CoTaskMemFree(wpath);
@@ -878,9 +877,7 @@ shared_ptr<IAssets> create_assets()
 
 	// initialize Direct2D
 	ID2D1Factory* d2d = nullptr;
-	hr = D2D1CreateFactory(
-			D2D1_FACTORY_TYPE_SINGLE_THREADED,
-			&d2d);
+	hr = D2D1CreateFactory(	D2D1_FACTORY_TYPE_SINGLE_THREADED,&d2d);
 	if (FAILED(hr)) {
 		wic->Release();
 		return nullptr;
@@ -888,10 +885,7 @@ shared_ptr<IAssets> create_assets()
 
 	// initialize DirectWrite for text
 	IDWriteFactory* dwrite = nullptr;
-	hr = DWriteCreateFactory(
-		DWRITE_FACTORY_TYPE_SHARED,
-		__uuidof(IDWriteFactory),
-		reinterpret_cast<IUnknown**>(&dwrite));
+	hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(IDWriteFactory),reinterpret_cast<IUnknown**>(&dwrite));
 	if (FAILED(hr)) {
 		wic->Release();
 		d2d->Release();

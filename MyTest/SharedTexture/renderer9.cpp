@@ -456,7 +456,7 @@ namespace {
 		}
 	};
 
-	class Renderer : public IScene
+	class Renderer9 : public IScene
 	{
 	private:
 		shared_ptr<IAssets> const assets_;
@@ -488,7 +488,7 @@ namespace {
 		shared_ptr<IConsole> console_;
 
 	public:
-		Renderer(
+		Renderer9(
 			shared_ptr<IAssets> const& assets,
 			shared_ptr<IDirect3DDevice9Ex> const& device,
 			shared_ptr<FrameBuffer> const& frame_buffer,
@@ -726,8 +726,7 @@ namespace {
 			return true;
 		}
 
-		shared_ptr<Quad> create_quad(
-			float x, float y, float w, float h, float u=1.0f, float v=1.0f)
+		shared_ptr<Quad> create_quad(float x, float y, float w, float h, float u=1.0f, float v=1.0f)
 		{
 			IDirect3DVertexBuffer9* vb = nullptr;
 			auto const hr = device_->CreateVertexBuffer(
@@ -961,11 +960,7 @@ namespace {
 		return nullptr;
 	}
 
-	shared_ptr<FrameBuffer> create_frame_buffer(
-		shared_ptr<IDirect3DDevice9Ex> const& device,
-		uint32_t buffers,
-		uint32_t width,
-		uint32_t height)
+	shared_ptr<FrameBuffer> create_frame_buffer(shared_ptr<IDirect3DDevice9Ex> const& device,uint32_t buffers,uint32_t width,uint32_t height)
 	{
 		vector<std::shared_ptr<Texture2D>> textures;
 
@@ -993,8 +988,7 @@ namespace {
 
 }
 
-shared_ptr<IScene> create_producer(
-	void* native_window, uint32_t width, uint32_t height, shared_ptr<IAssets> const& assets)
+shared_ptr<IScene> create_producer(void* native_window, uint32_t width, uint32_t height, shared_ptr<IAssets> const& assets)
 {
 	auto const dev = create_device((HWND)native_window, width, height);
 	if (!dev) {
@@ -1014,7 +1008,7 @@ shared_ptr<IScene> create_producer(
 		queue->checkin(swapchain->buffer(n));			
 	}
 	
-	auto const producer = make_shared<Renderer>(assets, dev, swapchain, queue);
+	auto const producer = make_shared<Renderer9>(assets, dev, swapchain, queue);
 	
 	string title("Direct3D 9 Producer");
 	title.append(" - [gpu: ");

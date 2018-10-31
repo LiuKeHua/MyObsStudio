@@ -12,7 +12,7 @@ using namespace std;
 
 namespace {
 
-	class Renderer : public IScene
+	class Renderer11 : public IScene
 	{
 	private:
 		shared_ptr<d3d11::Device> const device_;
@@ -27,7 +27,7 @@ namespace {
 		bool show_transparency_;
 
 	public:
-		Renderer(shared_ptr<d3d11::Device> const& device,
+		Renderer11(shared_ptr<d3d11::Device> const& device,
 			shared_ptr<d3d11::SwapChain> const& swapchain,
 			shared_ptr<ISurfaceQueue> const& queue)
 			: device_(device)
@@ -74,7 +74,8 @@ namespace {
 
 			swapchain_->clear(bg_color_.r, bg_color_.g, bg_color_.b, bg_color_.a);
 
-			if (!geometry_) {
+			if (!geometry_)
+			{
 				geometry_ = device_->create_quad(0.0f, 0.0f, 1.0f, 1.0f, false);
 			}
 
@@ -134,11 +135,7 @@ namespace {
 }
 
 
-shared_ptr<IScene> create_consumer(
-	void* native_window, 
-	uint32_t width,
-	uint32_t height,
-	shared_ptr<IScene> const& producer)
+shared_ptr<IScene> create_consumer(void* native_window, uint32_t width,uint32_t height,shared_ptr<IScene> const& producer)
 {
 	auto const dev = d3d11::create_device();
 	if (!dev) {
@@ -151,8 +148,7 @@ shared_ptr<IScene> create_consumer(
 		return nullptr;
 	}
 	
-	auto const consumer = make_shared<Renderer>(
-		dev, swapchain, producer->queue());
+	auto const consumer = make_shared<Renderer11>(dev, swapchain, producer->queue());
 
 	string title("Direct3D 11 Consumer");
 	title.append(" - [gpu: ");
