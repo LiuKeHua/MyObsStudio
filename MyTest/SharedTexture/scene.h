@@ -88,10 +88,11 @@ std::shared_ptr<IScene> create_producer(
 	void* native_window, 
 	uint32_t width, 
 	uint32_t height,
-	std::shared_ptr<IAssets> const& assets);
+	std::shared_ptr<IAssets> const& assets,
+	std::shared_ptr<ISurfaceQueue> const& queue);
 
 std::shared_ptr<IScene> create_consumer(
 	void* native_window,
 	uint32_t width,
 	uint32_t height,
-	std::shared_ptr<IScene> const& producer);
+	std::shared_ptr<ISurfaceQueue> const& queue);

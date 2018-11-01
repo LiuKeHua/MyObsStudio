@@ -244,9 +244,11 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int)
 	auto assets = create_assets();
 
 	assets->generate(width, height);
+
+	auto const queue = create_surface_queue();
 	
-	auto producer = create_producer(win_preview, width, height, assets);
-	auto consumer = create_consumer(win_main, width, height, producer);
+	auto producer = create_producer(win_preview, width, height, assets, queue);
+	auto consumer = create_consumer(win_main, width, height, queue);
 
 	SetWindowLongPtr(win_main, GWLP_USERDATA, (LONG_PTR)consumer.get());
 	SetWindowLongPtr(win_preview, GWLP_USERDATA, (LONG_PTR)producer.get());

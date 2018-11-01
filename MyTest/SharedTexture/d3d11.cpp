@@ -28,11 +28,7 @@ namespace d3d11
 		ctx_->Flush();
 	}
 
-	SwapChain::SwapChain(
-				IDXGISwapChain* swapchain, 
-				ID3D11RenderTargetView* rtv,
-				ID3D11SamplerState* sampler,
-				ID3D11BlendState* blender)
+	SwapChain::SwapChain(IDXGISwapChain* swapchain, ID3D11RenderTargetView* rtv,ID3D11SamplerState* sampler,ID3D11BlendState* blender)
 		: sampler_(to_com_ptr(sampler))
 		, blender_(to_com_ptr(blender))
 		, swapchain_(to_com_ptr(swapchain))
@@ -145,6 +141,7 @@ namespace d3d11
 			}
 			dev->Release();
 		}
+
 		buffer->Release();
 
 		D3D11_VIEWPORT vp;
@@ -158,10 +155,7 @@ namespace d3d11
 	}
 
 
-	Effect::Effect(
-		ID3D11VertexShader* vsh,
-		ID3D11PixelShader* psh,
-		ID3D11InputLayout* layout)
+	Effect::Effect(ID3D11VertexShader* vsh,ID3D11PixelShader* psh,ID3D11InputLayout* layout)
 		: vsh_(to_com_ptr(vsh))
 		, psh_(to_com_ptr(psh))
 		, layout_(to_com_ptr(layout))
@@ -182,11 +176,7 @@ namespace d3d11
 	{
 	}
 	
-	Geometry::Geometry(
-			D3D_PRIMITIVE_TOPOLOGY primitive,
-			uint32_t vertices,
-			uint32_t stride,
-			ID3D11Buffer* buffer)
+	Geometry::Geometry(D3D_PRIMITIVE_TOPOLOGY primitive,uint32_t vertices,uint32_t stride,ID3D11Buffer* buffer)
 		: primitive_(primitive)
 		, vertices_(vertices)
 		, stride_(stride)
@@ -218,18 +208,19 @@ namespace d3d11
 
 		// todo: handle offset
 		d3d11_ctx->Draw(vertices_, 0);
-	}	
-	Texture2D::Texture2D(
-		ID3D11Texture2D* tex,
-		ID3D11ShaderResourceView* srv)
+	}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+	Texture2D::Texture2D(ID3D11Texture2D* tex,ID3D11ShaderResourceView* srv)
 		: texture_(to_com_ptr(tex))
 		, srv_(to_com_ptr(srv))
 	{
 		share_handle_ = nullptr;
 
 		IDXGIResource* res = nullptr;
-		if (SUCCEEDED(texture_->QueryInterface(
-			__uuidof(IDXGIResource), reinterpret_cast<void**>(&res))))
+		if (SUCCEEDED(texture_->QueryInterface(	__uuidof(IDXGIResource), reinterpret_cast<void**>(&res))))
 		{
 			res->GetSharedHandle(&share_handle_);
 			res->Release();
@@ -313,7 +304,6 @@ namespace d3d11
 		}
 	}
 
-
 	Device::Device(ID3D11Device* pdev, ID3D11DeviceContext* pctx)
 		: device_(to_com_ptr(pdev))
 		, ctx_(make_shared<Context>(pctx)) {
@@ -376,8 +366,7 @@ namespace d3d11
 				return nullptr;
 			}
 			
-			hr = adapter->GetParent(
-				__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgi_factory));
+			hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgi_factory));
 			adapter->Release();
 		}
 
@@ -403,8 +392,7 @@ namespace d3d11
 			sd.BufferCount = 1;
 
 			IDXGISwapChain1* swapchain1 = nullptr;
-			hr = dxgi_factory2->CreateSwapChainForHwnd(
-							device_.get(), window, &sd, nullptr, nullptr, &swapchain1);
+			hr = dxgi_factory2->CreateSwapChainForHwnd(device_.get(), window, &sd, nullptr, nullptr, &swapchain1);
 			if (SUCCEEDED(hr))
 			{
 				hr = swapchain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&swapchain));
@@ -517,8 +505,8 @@ namespace d3d11
 		height = height * 2.0f;
 		float z = 1.0f;
 
-		SimpleVertex vertices[] = {
-
+		SimpleVertex vertices[] = 
+		{
 			{ DirectX::XMFLOAT3(x, y, z), DirectX::XMFLOAT2(0.0f, 0.0f) },
 			{ DirectX::XMFLOAT3(x + width, y, z), DirectX::XMFLOAT2(1.0f, 0.0f) },
 			{ DirectX::XMFLOAT3(x, y - height, z), DirectX::XMFLOAT2(0.0f, 1.0f) },
@@ -548,8 +536,7 @@ namespace d3d11
 		ID3D11Buffer* buffer = nullptr;
 		auto const hr = device_->CreateBuffer(&desc, &srd, &buffer);
 		if (SUCCEEDED(hr)) {
-			return make_shared<Geometry>(
-				D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, static_cast<uint32_t>(sizeof(SimpleVertex)), buffer);
+			return make_shared<Geometry>(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, static_cast<uint32_t>(sizeof(SimpleVertex)), buffer);
 		}
 
 		return nullptr;
@@ -591,12 +578,7 @@ namespace d3d11
 		return make_shared<Texture2D>(tex, srv);
 	}
 
-	shared_ptr<Texture2D> Device::create_texture(
-			int width,
-			int height,
-			DXGI_FORMAT format,
-			const void* data,
-			size_t row_stride)
+	shared_ptr<Texture2D> Device::create_texture(int width,int height,DXGI_FORMAT format,const void* data,size_t row_stride)
 	{
 		D3D11_TEXTURE2D_DESC td;
 		td.ArraySize = 1;
@@ -645,40 +627,40 @@ namespace d3d11
 	shared_ptr<Effect> Device::create_default_effect()
 	{
 		auto const vsh =
-R"--(struct VS_INPUT
-{
-	float4 pos : POSITION;
-	float2 tex : TEXCOORD0;
-};
+			R"--(struct VS_INPUT
+			{
+				float4 pos : POSITION;
+				float2 tex : TEXCOORD0;
+			};
 
-struct VS_OUTPUT
-{
-	float4 pos : SV_POSITION;
-	float2 tex : TEXCOORD0;
-};
+			struct VS_OUTPUT
+			{
+				float4 pos : SV_POSITION;
+				float2 tex : TEXCOORD0;
+			};
 
-VS_OUTPUT main(VS_INPUT input)
-{
-	VS_OUTPUT output;
-	output.pos = input.pos;
-	output.tex = input.tex;
-	return output;
-})--";
+			VS_OUTPUT main(VS_INPUT input)
+			{
+				VS_OUTPUT output;
+				output.pos = input.pos;
+				output.tex = input.tex;
+				return output;
+			})--";
 
 		auto const psh =
-R"--(Texture2D tex0 : register(t0);
-SamplerState samp0 : register(s0);
+			R"--(Texture2D tex0 : register(t0);
+			SamplerState samp0 : register(s0);
 
-struct VS_OUTPUT
-{
-	float4 pos : SV_POSITION;
-	float2 tex : TEXCOORD0;
-};
+			struct VS_OUTPUT
+			{
+				float4 pos : SV_POSITION;
+				float2 tex : TEXCOORD0;
+			};
 
-float4 main(VS_OUTPUT input) : SV_Target
-{
-	return tex0.Sample(samp0, input.tex);
-})--";
+			float4 main(VS_OUTPUT input) : SV_Target
+			{
+				return tex0.Sample(samp0, input.tex);
+			})--";
 
 		return create_effect(
 				vsh, 
@@ -709,11 +691,7 @@ float4 main(VS_OUTPUT input) : SV_Target
 
 		if (vs_blob)
 		{
-			device_->CreateVertexShader(
-					vs_blob->GetBufferPointer(), 
-					vs_blob->GetBufferSize(), 
-					nullptr, 
-					&vshdr);
+			device_->CreateVertexShader(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize(), nullptr, &vshdr);
 
 			D3D11_INPUT_ELEMENT_DESC layout_desc[] =
 			{

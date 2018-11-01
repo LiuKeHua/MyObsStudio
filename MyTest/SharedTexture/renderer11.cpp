@@ -135,7 +135,7 @@ namespace {
 }
 
 
-shared_ptr<IScene> create_consumer(void* native_window, uint32_t width,uint32_t height,shared_ptr<IScene> const& producer)
+shared_ptr<IScene> create_consumer(void* native_window, uint32_t width,uint32_t height, std::shared_ptr<ISurfaceQueue> const& queue)
 {
 	auto const dev = d3d11::create_device();
 	if (!dev) {
@@ -148,7 +148,7 @@ shared_ptr<IScene> create_consumer(void* native_window, uint32_t width,uint32_t 
 		return nullptr;
 	}
 	
-	auto const consumer = make_shared<Renderer11>(dev, swapchain, producer->queue());
+	auto const consumer = make_shared<Renderer11>(dev, swapchain, queue);
 
 	string title("Direct3D 11 Consumer");
 	title.append(" - [gpu: ");

@@ -78,7 +78,7 @@ namespace {
 	}
 		
 
-	class Texture2D : public ISurface
+	class Texture2D_DX9 : public ISurface
 	{
 	private:
 		std::shared_ptr<IDirect3DDevice9Ex> const device_;
@@ -88,7 +88,7 @@ namespace {
 		uint32_t height_;
 
 	public:
-		Texture2D(shared_ptr<IDirect3DDevice9Ex> const device,IDirect3DTexture9* texture,void* share_handle)
+		Texture2D_DX9(shared_ptr<IDirect3DDevice9Ex> const device,IDirect3DTexture9* texture,void* share_handle)
 			: device_(device)
 			, texture_(to_com_ptr(texture))
 			, share_handle_(share_handle)
@@ -124,15 +124,13 @@ namespace {
 	private:
 		std::shared_ptr<IDirect3DDevice9Ex> const device_;
 		std::shared_ptr<IDirect3DSurface9> saved_target_;
-		std::vector<std::shared_ptr<Texture2D>> buffers_;
+		std::vector<std::shared_ptr<Texture2D_DX9>> buffers_;
 		uint32_t width_;
 		uint32_t height_;
 
 	public:
 
-		FrameBuffer(
-			shared_ptr<IDirect3DDevice9Ex> const device,
-			vector<shared_ptr<Texture2D>> const& buffers)
+		FrameBuffer(shared_ptr<IDirect3DDevice9Ex> const device,vector<shared_ptr<Texture2D_DX9>> const& buffers)
 			: device_(device)
 			, width_(0)
 			, height_(0)
@@ -148,14 +146,14 @@ namespace {
 		uint32_t width() const { return width_; }
 		uint32_t height() const { return height_; }
 
-		shared_ptr<Texture2D> bind(void* target)
+		shared_ptr<Texture2D_DX9> bind(void* target)
 		{
 			// save original render-target
 			IDirect3DSurface9* rt = nullptr;
 			device_->GetRenderTarget(0, &rt);
 			saved_target_ = to_com_ptr<>(rt);
 
-			shared_ptr<Texture2D> texture;
+			shared_ptr<Texture2D_DX9> texture;
 
 			for (auto const& b : buffers_)
 			{
@@ -199,7 +197,7 @@ namespace {
 			return buffers_.size();
 		}
 
-		std::shared_ptr<Texture2D> buffer(size_t n) const
+		std::shared_ptr<Texture2D_DX9> buffer(size_t n) const
 		{
 			if (n < buffers_.size()) {
 				return buffers_[n];
@@ -243,7 +241,7 @@ namespace {
 		{
 		}
 		
-		void draw(shared_ptr<Texture2D> const& texture)
+		void draw(shared_ptr<Texture2D_DX9> const& texture)
 		{
 			if (texture)
 			{
@@ -396,7 +394,7 @@ namespace {
 			vertices_->Unlock();				
 		}
 
-		void draw(shared_ptr<Texture2D> const& texture)
+		void draw(shared_ptr<Texture2D_DX9> const& texture)
 		{
 			if (texture && vertices_ && indices_)
 			{
@@ -466,13 +464,13 @@ namespace {
 		shared_ptr<IDirect3DQuery9> flush_query_;
 		
 		shared_ptr<Quad> meter_quad_;
-		shared_ptr<Texture2D> meter_;
+		shared_ptr<Texture2D_DX9> meter_;
 
 		shared_ptr<Quad> preview_quad_;
 		shared_ptr<Quad> spinner_quad_;
 		
 		shared_ptr<Quad> pattern_quad_;
-		shared_ptr<Texture2D> pattern_;
+		shared_ptr<Texture2D_DX9> pattern_;
 		
 		double spin_angle_;
 		int64_t frame_;
@@ -483,7 +481,7 @@ namespace {
 		color bg_color_;
 		bool show_transparency_;
 		
-		shared_ptr<Texture2D> console_font_;
+		shared_ptr<Texture2D_DX9> console_font_;
 		shared_ptr<ConsoleGeometry> console_geometry_;
 		shared_ptr<IConsole> console_;
 
@@ -587,36 +585,36 @@ namespace {
 			clear(color());
 			
 			device_->BeginScene();
-
-			auto const w = width();
-			auto const h = height();
-			
-			D3DMATRIX mview;
-			matrix_identity(mview);
-			mview._41 = (-(w / 2.0f));
-			mview._42 = (-(h / 2.0f));
-
-			D3DMATRIX mproj;
-			matrix_ortho_lh(mproj, w * 1.0f, h * -1.0f, 0.0f, 1.0f);
-
-			device_->SetTransform(D3DTS_PROJECTION, &mproj);
-			device_->SetTransform(D3DTS_VIEW, &mview);
-
-			shared_ptr<Texture2D> buffer;
-				
 			{
-				buffer = frame_buffer_->bind(target->share_handle());
-					
-				clear(bg_color_);
-	
-				render_scene();
-					
-				frame_buffer_->unbind();
-			}
-			
-			// we could add a property to disable preview
-			preview(buffer);
+				auto const w = width();
+				auto const h = height();
 
+				D3DMATRIX mview;
+				matrix_identity(mview);
+				mview._41 = (-(w / 2.0f));
+				mview._42 = (-(h / 2.0f));
+
+				D3DMATRIX mproj;
+				matrix_ortho_lh(mproj, w * 1.0f, h * -1.0f, 0.0f, 1.0f);
+
+				device_->SetTransform(D3DTS_PROJECTION, &mproj);
+				device_->SetTransform(D3DTS_VIEW, &mview);
+
+				shared_ptr<Texture2D_DX9> buffer;
+
+				{
+					buffer = frame_buffer_->bind(target->share_handle());
+
+					clear(bg_color_);
+
+					render_scene();
+
+					frame_buffer_->unbind();
+				}
+
+				// we could add a property to disable preview
+				preview(buffer);
+			}
 			device_->EndScene();
 
 			// ensure the D3D9 device is done writing to our texture buffer
@@ -647,7 +645,7 @@ namespace {
 		// render the surface to our window swapchain so we can 
 		// preview it on-screen
 		//
-		void preview(shared_ptr<Texture2D> const& texture)
+		void preview(shared_ptr<Texture2D_DX9> const& texture)
 		{
 			if (!preview_quad_) {
 				preview_quad_ = create_quad(0.0f, 0.0f, float(width()), float(height()));
@@ -856,7 +854,7 @@ namespace {
 			}
 		}
 
-		shared_ptr<Texture2D> load_texture(string const& key)
+		shared_ptr<Texture2D_DX9> load_texture(string const& key)
 		{
 			if (assets_)
 			{
@@ -869,7 +867,7 @@ namespace {
 			return nullptr;			
 		}
 
-		shared_ptr<Texture2D> load_texture(shared_ptr<IImage> const& image)
+		shared_ptr<Texture2D_DX9> load_texture(shared_ptr<IImage> const& image)
 		{
 			if (!image) {
 				return nullptr;			
@@ -918,7 +916,7 @@ namespace {
 				texture->UnlockRect(0);
 			}
 
-			return make_shared<Texture2D>(device_, texture, nullptr);
+			return make_shared<Texture2D_DX9>(device_, texture, nullptr);
 		}
 
 	};
@@ -962,7 +960,7 @@ namespace {
 
 	shared_ptr<FrameBuffer> create_frame_buffer(shared_ptr<IDirect3DDevice9Ex> const& device,uint32_t buffers,uint32_t width,uint32_t height)
 	{
-		vector<std::shared_ptr<Texture2D>> textures;
+		vector<std::shared_ptr<Texture2D_DX9>> textures;
 
 		for (size_t n = 0; n < buffers; n++)
 		{
@@ -976,7 +974,7 @@ namespace {
 				&texture,
 				&share);
 			if (SUCCEEDED(hr)) {
-				textures.push_back(make_shared<Texture2D>(device, texture, share));
+				textures.push_back(make_shared<Texture2D_DX9>(device, texture, share));
 			}
 		}
 
@@ -988,7 +986,7 @@ namespace {
 
 }
 
-shared_ptr<IScene> create_producer(void* native_window, uint32_t width, uint32_t height, shared_ptr<IAssets> const& assets)
+shared_ptr<IScene> create_producer(void* native_window, uint32_t width, uint32_t height, shared_ptr<IAssets> const& assets, std::shared_ptr<ISurfaceQueue> const& queue)
 {
 	auto const dev = create_device((HWND)native_window, width, height);
 	if (!dev) {
@@ -1003,7 +1001,7 @@ shared_ptr<IScene> create_producer(void* native_window, uint32_t width, uint32_t
 	
 	// notify the surface queue about the shared textures 
 	// we will be rendering to
-	auto const queue = create_surface_queue();
+	
 	for (size_t n = 0; n < swapchain->buffer_count(); ++n) {
 		queue->checkin(swapchain->buffer(n));			
 	}

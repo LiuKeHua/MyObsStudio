@@ -39,9 +39,7 @@ namespace d3d11 {
 
 		void flush();
 
-		operator ID3D11DeviceContext*() {
-			return ctx_.get();
-		}
+		operator ID3D11DeviceContext*() {return ctx_.get();}
 
 	private:
 		
@@ -66,15 +64,9 @@ namespace d3d11 {
 
 		std::shared_ptr<SwapChain> create_swapchain(HWND, int width=0, int height=0);
 		
-		std::shared_ptr<Geometry> create_quad(
-					float x, float y, float width, float height, bool flip=false);
+		std::shared_ptr<Geometry> create_quad(float x, float y, float width, float height, bool flip=false);
 
-		std::shared_ptr<Texture2D> create_texture(
-					int width, 
-					int height, 
-					DXGI_FORMAT format, 
-					const void* data,
-					size_t row_stride);
+		std::shared_ptr<Texture2D> create_texture(int width, int height, DXGI_FORMAT format, const void* data,size_t row_stride);
 
 		std::shared_ptr<Texture2D> open_shared_texture(void*);
 
@@ -129,9 +121,7 @@ namespace d3d11 {
 	class Texture2D
 	{
 	public:
-		Texture2D(
-			ID3D11Texture2D* tex,
-			ID3D11ShaderResourceView* srv);
+		Texture2D(ID3D11Texture2D* tex,ID3D11ShaderResourceView* srv);
 
 		void bind(std::shared_ptr<Context> const& ctx);
 		void unbind();
