@@ -1,3 +1,4 @@
+SET(MyCategory Plugins/ffmpeg)
 
 set(obs-ffmpeg_HEADERS
 	obs-ffmpeg-formats.h

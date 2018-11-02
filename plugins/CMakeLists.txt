@@ -6,7 +6,7 @@ endif()
 
 SET(MyCategory Plugins)
 
-
+add_subdirectory(MyPlugins)
 add_subdirectory(image-source)
 
 

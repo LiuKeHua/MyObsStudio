@@ -1,4 +1,3 @@
-project(obs-qsv11)
 
 include_directories(libmfx/include/msdk/include)
 include_directories(libmfx/include)

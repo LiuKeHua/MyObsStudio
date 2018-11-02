@@ -1,8 +1,6 @@
 
 SET(MyCategory App)
 
-
-
 find_package(Qt5Core)
 find_package(Qt5Network)
 find_package(Qt5Widgets)
