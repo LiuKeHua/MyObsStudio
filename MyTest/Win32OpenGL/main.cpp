@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <gl/gl.h>
  
+#include <iostream>
 // Function Declarations
  
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -126,11 +127,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 		switch ( wParam )
 		{
-			
+		case VK_SPACE:
+			std::cout << "Receive Space event" << std::endl;
+			return 0;
 		case VK_ESCAPE:
 			PostQuitMessage(0);
 			return 0;
-			
+		default:
+			std::cout << "Recevie Keydown Event" << std::endl;
 		}
 		return 0;
 	

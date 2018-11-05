@@ -305,6 +305,39 @@ static inline bool dxgi_hookable(void)
 		!!global_hook_info->offsets.dxgi.resize;
 }
 
+typedef struct  
+{
+	unsigned long process_id;
+	HWND best_handle;
+}handle_data;
+
+BOOL IsMainWindow(HWND handle)
+{
+	return GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
+}
+
+BOOL CALLBACK EnumWindowsCallback(HWND handle, LPARAM lParam)
+{
+	handle_data * data = (handle_data*)lParam;
+	unsigned long process_id = 0;
+	GetWindowThreadProcessId(handle, &process_id);
+	if (data->process_id != process_id || !IsMainWindow(handle)) 
+	{
+		return TRUE;
+	}
+	data->best_handle = handle;
+	return FALSE;
+}
+
+HWND FindMainWindow(unsigned long process_id)
+{
+	handle_data data;
+	data.process_id = process_id;
+	data.best_handle = 0;
+	EnumWindows(EnumWindowsCallback, (LPARAM)&data);
+	return data.best_handle;
+}
+
 static inline bool attempt_hook(void)
 {
 	//static bool ddraw_hooked = false;
@@ -312,6 +345,23 @@ static inline bool attempt_hook(void)
 	static bool d3d9_hooked  = false;
 	static bool dxgi_hooked  = false;
 	static bool gl_hooked    = false;
+
+
+	DWORD id = GetCurrentProcessId();
+	HWND hWnd  = FindMainWindow(id);
+//	SetForegroundWindow(hwnd);
+
+//	PostMessage(hWnd, WM_KEYDOWN, VK_SPACE, 0);
+//	PostMessage(hWnd, WM_KEYUP, VK_SPACE, 0);
+
+	SendMessage(hWnd, WM_KEYDOWN, VK_SPACE, 0);
+	SendMessage(hWnd, WM_KEYUP, VK_SPACE, 0);
+
+//	SendMessage(hWnd, WM_KEYDOWN, 'A', 0);
+//	SendMessage(hWnd, WM_KEYUP, 'A', 0);
+
+
+	printf("Send Space Event\n");
 
 	if (!d3d9_hooked) {
 		if (!d3d9_hookable()) {
@@ -780,7 +830,7 @@ void capture_free(void)
 
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID unused1)
 {
-	printf("helloWorld");
+	printf("helloWorld\n");
 
 	if (reason == DLL_PROCESS_ATTACH) {
 		wchar_t name[MAX_PATH];
