@@ -14,6 +14,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/Common;${CMAKE_MODULE_PATH}")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/version_utils;${CMAKE_MODULE_PATH}")
 
 
+
 #消除QT的AUTOMOC 和 AUTOUIC警告
 #参加 https://cmake.org/cmake/help/v3.10/policy/CMP0071.html
 if(POLICY CMP0071)

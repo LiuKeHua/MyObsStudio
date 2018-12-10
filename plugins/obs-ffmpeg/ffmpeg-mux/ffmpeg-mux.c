@@ -671,6 +671,8 @@ int main(int argc, char *argv[])
 		WideCharToMultiByte(CP_UTF8, 0, argv_w[i], (int)len, argv[i],
 				size + 1, NULL, NULL);
 		argv[i][size] = 0;
+
+		printf(argv[i]);
 	}
 
 	_setmode(_fileno(stdin), O_BINARY);

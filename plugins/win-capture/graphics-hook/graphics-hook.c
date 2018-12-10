@@ -349,7 +349,6 @@ static inline bool attempt_hook(void)
 
 	DWORD id = GetCurrentProcessId();
 	HWND hWnd  = FindMainWindow(id);
-//	SetForegroundWindow(hwnd);
 
 //	PostMessage(hWnd, WM_KEYDOWN, VK_SPACE, 0);
 //	PostMessage(hWnd, WM_KEYUP, VK_SPACE, 0);
